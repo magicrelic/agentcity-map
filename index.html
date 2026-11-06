@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="light"><title>复杂系统研究 · 概念与数学工具</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="katex/katex.min.css">
-  <link rel="stylesheet" href="style.css?v=fc4d758a42297e084ee94be5009c951512bb858dd92f9f849fc2fc9d5742fe01">
-  <script type="module" src="app.js?v=fc4d758a42297e084ee94be5009c951512bb858dd92f9f849fc2fc9d5742fe01" data-source="data.json?v=fc4d758a42297e084ee94be5009c951512bb858dd92f9f849fc2fc9d5742fe01"></script>
+  <link rel="stylesheet" href="style.css?v=42f574d08a631fd916448ba78cbcffb3d568f50529c00c47722deb726ef2016c">
+  <script type="module" src="app.js?v=42f574d08a631fd916448ba78cbcffb3d568f50529c00c47722deb726ef2016c" data-source="data.json?v=42f574d08a631fd916448ba78cbcffb3d568f50529c00c47722deb726ef2016c"></script>
 </head>
 <body>
   <a class="skip" href="#search">跳到概念搜索</a>
@@ -19,11 +19,11 @@
   <main class="workspace">
     <aside class="sidebar" id="sidebar" aria-label="知识目录">
       <label for="search">查找概念</label>
-      <div class="search-box"><input id="search" type="search" placeholder="名称、英文、公式或用途" autocomplete="off"><button id="clear-search" class="quiet" aria-label="清空搜索" hidden>×</button></div>
+      <div class="search-box"><input id="search" type="search" placeholder="名称、英文、公式、例子或用途" autocomplete="off"><button id="clear-search" class="quiet" aria-label="清空搜索" hidden>×</button></div>
       <p id="search-status" class="muted" role="status">正在加载导图…</p>
       <div id="search-results" hidden></div>
       <nav id="groups" aria-label="知识组"></nav>
-      <div class="sidebar-note"><strong>阅读一篇论文时</strong><p>先看研究对象如何表示，再找演化规律、求解方法，以及支撑结论的分析工具。</p></div>
+      <div class="sidebar-note"><strong id="group-guide-title">分类与阅读</strong><p id="group-guide">从对象表示、演化规律一路找到求解、分析和验证方法。</p></div>
     </aside>
     <section class="map-area" aria-label="交互思维导图">
       <div class="map-heading"><button id="overview" class="quiet">全图</button><span id="breadcrumb">11 个知识组与资料来源</span></div>

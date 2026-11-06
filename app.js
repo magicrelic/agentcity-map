@@ -85,6 +85,8 @@ function render() {
     nodesElement.append(b);
   }
   $('#breadcrumb').textContent=activeGroup ? groups.get(activeGroup).question : '11 个知识组与资料来源';
+  $('#group-guide-title').textContent=activeGroup ? groups.get(activeGroup).title : '分类与阅读';
+  $('#group-guide').textContent=activeGroup ? groups.get(activeGroup).guide : '按概念在研究中承担的主要任务归组，同一概念只保留一处，用关联链接连接不同领域。读论文时，从对象表示、演化规律一路找到求解、分析和验证方法。';
   document.querySelectorAll('.group-item').forEach(b=>b.setAttribute('aria-current',String(b.dataset.group===activeGroup)));
   if(focused) nodesElement.querySelector(`[data-id="${focused}"]`)?.focus({preventScroll:true});
 }
@@ -127,11 +129,16 @@ function showDetail(c) {
   $('#detail-body').innerHTML=`<h2 id="detail-title" tabindex="-1">${esc(c.name)}</h2>
     <p class="english">${esc(c.en)}</p><span class="kind">${esc(c.kind)}</span>
     <p class="meaning">${esc(c.meaning)}</p>
-    ${c.group==='sources'?'':`<h3>代表公式</h3><div class="formula">${c.formulaHtml}</div><p class="symbols">${esc(c.symbols)}</p>`}
-    <h3>用途</h3><p class="description">${esc(c.use)}</p>
+    ${c.group==='sources'?'':`<h3>直觉与区别</h3><p class="description">${esc(c.intuition)}</p>
+      <h3>代表公式与读法</h3><div class="formula">${c.formulaHtml}</div><p class="symbols">${esc(c.symbols)}</p>
+      <p class="description formula-reading">${esc(c.reading)}</p>
+      <h3>具体例子</h3><p class="description example">${esc(c.example)}</p>`}
+    <h3>${c.group==='sources'?'用途':'在论文中怎么用'}</h3><p class="description">${esc(c.use)}</p>
+    ${c.group==='sources'?'':`<p class="description paper-role">${esc(c.inPaper)}</p>`}
     <h3>适用条件</h3><p class="description">${esc(c.condition)}</p>
     ${c.related.length?'<h3>关联概念</h3><ul class="related" id="related"></ul>':''}
-    <h3>集智资料</h3><a class="source-link" target="_blank" rel="noopener noreferrer" href="${esc(c.source.url)}">${esc(c.source.title)}<small>${esc(new URL(c.source.url).hostname)}</small></a>`;
+    <h3>集智资料</h3><a class="source-link" target="_blank" rel="noopener noreferrer" href="${esc(c.source.url)}">${esc(c.source.title)}<small>${esc(new URL(c.source.url).hostname)}</small></a>
+    ${c.references.length?`<h3>延伸阅读 · 原始论文与作者资料</h3>${c.references.map(r=>`<a class="reference-link" target="_blank" rel="noopener noreferrer" href="${esc(r.url)}">${esc(r.title)}<small>${esc(new URL(r.url).hostname)}</small></a>`).join('')}`:''}`;
   for(const relation of c.related){
     const li=document.createElement('li'),target=concepts.get(relation.id);
     const b=button(target.name,()=>selectConcept(target.id));
@@ -165,7 +172,7 @@ async function init() {
     tree=data.groups.map(g=>({id:g.id,name:g.title,type:'group',group:g.id,parent:'root',count:g.concepts.length,
       children:g.sections.length ? g.sections.map(s=>{sections.set(s.id,s);return {id:s.id,name:s.title,type:'section',group:g.id,parent:g.id,count:s.concepts.length,
         children:s.concepts.map(id=>{parentSection.set(id,s.id);return {id,name:concepts.get(id).name,type:'concept',group:g.id,parent:s.id};})};}) : g.concepts.map(id=>({id,name:concepts.get(id).name,type:'concept',group:g.id,parent:g.id}))}));
-    for(const c of data.concepts)c.searchText=[c.name,c.en,c.meaning,c.formula,c.symbols,c.use,c.condition,groups.get(c.group).title].join(' ').toLocaleLowerCase();
+    for(const c of data.concepts)c.searchText=[c.name,c.en,c.meaning,c.formula,c.symbols,c.use,c.condition,c.intuition,c.reading,c.example,c.inPaper,groups.get(c.group).title].join(' ').toLocaleLowerCase();
     $('#groups').replaceChildren();
     for(const g of data.groups){const b=button('',()=>goGroup(g.id),'group-item');b.dataset.group=g.id;b.style.setProperty('--group',g.color);b.innerHTML=`<span>${esc(g.title)}</span><small>${g.concepts.length}</small>`;$('#groups').append(b);}
     search();route();
