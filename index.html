@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="复杂系统研究的概念与数学工具：从数学基础、动力系统、网络科学到推断、学习和控制的一张交互思维导图。">
+  <meta name="color-scheme" content="light"><title>复杂系统研究 · 概念与数学工具</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="katex/katex.min.css">
+  <link rel="stylesheet" href="style.css?v=fc4d758a42297e084ee94be5009c951512bb858dd92f9f849fc2fc9d5742fe01">
+  <script type="module" src="app.js?v=fc4d758a42297e084ee94be5009c951512bb858dd92f9f849fc2fc9d5742fe01" data-source="data.json?v=fc4d758a42297e084ee94be5009c951512bb858dd92f9f849fc2fc9d5742fe01"></script>
+</head>
+<body>
+  <a class="skip" href="#search">跳到概念搜索</a>
+  <header class="header">
+    <button id="menu" class="quiet menu" aria-label="打开知识目录" aria-expanded="false">☰</button>
+    <div class="brand"><h1>复杂系统研究</h1><p>概念与数学工具</p></div>
+    <nav aria-label="网站导航"><span aria-current="page">思维导图</span><a href="https://magicrelic.github.io/agentcity-literature/">论文库</a></nav>
+  </header>
+  <main class="workspace">
+    <aside class="sidebar" id="sidebar" aria-label="知识目录">
+      <label for="search">查找概念</label>
+      <div class="search-box"><input id="search" type="search" placeholder="名称、英文、公式或用途" autocomplete="off"><button id="clear-search" class="quiet" aria-label="清空搜索" hidden>×</button></div>
+      <p id="search-status" class="muted" role="status">正在加载导图…</p>
+      <div id="search-results" hidden></div>
+      <nav id="groups" aria-label="知识组"></nav>
+      <div class="sidebar-note"><strong>阅读一篇论文时</strong><p>先看研究对象如何表示，再找演化规律、求解方法，以及支撑结论的分析工具。</p></div>
+    </aside>
+    <section class="map-area" aria-label="交互思维导图">
+      <div class="map-heading"><button id="overview" class="quiet">全图</button><span id="breadcrumb">11 个知识组与资料来源</span></div>
+      <div id="viewport" tabindex="0" aria-label="导图画布，拖动平移，滚轮缩放；也可使用下方缩放按钮">
+        <div id="world"><svg id="edges" aria-hidden="true"></svg><div id="nodes"></div></div>
+      </div>
+      <div class="map-tools" aria-label="画布操作"><button id="zoom-out" aria-label="缩小">−</button><output id="zoom-label" aria-live="off">100%</output><button id="zoom-in" aria-label="放大">＋</button><span></span><button id="fit">适应视图</button></div>
+      <p class="map-hint">点击展开分支 · 拖动平移 · 滚轮缩放</p>
+      <div id="load-error" class="load-error" role="alert" hidden><p>导图暂时无法加载，请重新尝试。</p><button id="retry">重新加载</button></div>
+    </section>
+    <aside id="detail" class="detail" aria-labelledby="detail-title" hidden>
+      <div class="detail-top"><span id="detail-group"></span><button id="close-detail" class="quiet" aria-label="关闭概念详情">×</button></div>
+      <div id="detail-body" class="detail-body"></div>
+      <div class="detail-bottom"><button id="copy-link">复制概念链接</button><span id="copy-status" role="status"></span></div>
+    </aside>
+  </main>
+  <noscript>请启用 JavaScript，以展开导图、搜索概念和查看详情。</noscript>
+</body>
+</html>
