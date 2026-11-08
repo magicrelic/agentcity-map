@@ -1,12 +1,12 @@
 {
-  "version": "4c37940a9a647e83e5d4c2a430af4d36a858e3832832df8b38c39cbc156488ba",
+  "version": "d650033cd7e26e1009c9e84b11e3d7af3757e4261ce7cd0aa6e3c6e4c84549a9",
   "concepts": 135,
   "files": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "app.js": "a86ee3f570da3e27f715474ad8d6e8f422654835fb4b341c2479c3c50ca1a474",
     "data.json": "67354512e51062aafeb7ce9e9dd0dd8fcc8f49f302714c47e2011dcbb0e47723",
     "icon.svg": "49c0c0fcacea43ff3a0dd509d36750ff414d11805e9833bf02eeff710ff0a20a",
-    "index.html": "c2dae96e07724f9d1f253396c93c107908b2839500bcb74a46eb895938624c9e",
+    "index.html": "9e82b4af8c22a1130029df368790ca797d07150deca552330d5ad6390302a29e",
     "katex/fonts/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
     "katex/fonts/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
     "katex/fonts/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
@@ -69,6 +69,6 @@
     "katex/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
     "katex/katex.min.css": "d4ab5b8ee16989b070cdb0ea24bd6ad48fc8df1b787f280f29d3ae4f959f2c00",
     "katex/LICENSE.txt": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3",
-    "style.css": "21eca20238014fa38d053eb6d7cc1ca6a07b0865f2938c0432020cf400b8a475"
+    "style.css": "51d4b0d38a74c9d3083cd963a7985db005350b4a44955aa175a59238fcb3619f"
   }
 }
