@@ -50,7 +50,8 @@ function buildList(nodes,container) {
     const text=document.createElement('span'),title=document.createElement('span');
     text.className='row-text';title.className='row-title';title.textContent=node.name;text.append(title);row.append(text);
     if(node.type==='concept'){
-      const english=document.createElement('span');english.className='row-en';english.textContent=concepts.get(node.id).en;text.append(english);
+      row.dataset.conceptId=node.conceptId;
+      const english=document.createElement('span');english.className='row-en';english.textContent=concepts.get(node.conceptId).en;text.append(english);
     } else {
       const count=document.createElement('span');count.className='row-count';count.textContent=`${node.count} 项`;count.setAttribute('aria-hidden','true');row.append(count);
     }
@@ -90,7 +91,7 @@ function expandAncestors(id) {
   while(parent){expanded.add(parent);parent=entries.get(parent).node.parent;}
 }
 function activate(node) {
-  if(node.type==='concept')return selectConcept(node.id);
+  if(node.type==='concept')return selectConcept(node.conceptId,true,node.id);
   const open=!expanded.has(node.id);
   if(open)expanded.add(node.id);else expanded.delete(node.id);
   activeGroup=node.group;hideDetail();closeSearch();
@@ -115,17 +116,18 @@ function closeDetail() {
   target.focus({preventScroll:true});
   if(outline.contains(target))target.scrollIntoView({block:'nearest'});
 }
-function selectConcept(id,updateHash=true) {
+function selectConcept(id,updateHash=true,entryId=null) {
   const c=concepts.get(id);if(!c)return;
+  entryId??=[...entries.values()].find(({node})=>node.conceptId===id&&node.group===activeGroup)?.node.id||id;
   if(!detail.open)focusBeforeDetail=document.activeElement.closest('.search-area')?$('#search'):document.activeElement;
-  selected=id;activeGroup=c.group;expandAncestors(id);
-  if(updateHash)setHash(id);
-  closeSearch();render();entries.get(id).row.scrollIntoView({block:'nearest'});showDetail(c);
+  selected=entryId;activeGroup=entries.get(entryId).node.group;expandAncestors(entryId);
+  if(updateHash)setHash(entryId);
+  closeSearch();render();entries.get(entryId).row.scrollIntoView({block:'nearest'});showDetail(c);
   if(!detail.open)detail.showModal();
   $('#detail-title').focus({preventScroll:true});
 }
 function showDetail(c) {
-  const g=groups.get(c.group);
+  const g=groups.get(activeGroup), context=c.contexts[activeGroup]||{};
   $('#detail-group').textContent=g.title;$('#copy-status').textContent='';
   $('#detail-body').innerHTML=`<h2 id="detail-title" tabindex="-1">${esc(c.name)}</h2>
     <p class="english">${esc(c.en)}</p><span class="kind">${esc(c.kind)}</span>
@@ -134,8 +136,8 @@ function showDetail(c) {
       <h3>代表公式与读法</h3><div class="formula">${c.formulaHtml}</div><p class="symbols">${esc(c.symbols)}</p>
       <p class="description formula-reading">${esc(c.reading)}</p>
       <h3>具体例子</h3><p class="description example">${esc(c.example)}</p>`}
-    <h3>${c.group==='sources'?'用途':'在论文中怎么用'}</h3><p class="description">${esc(c.use)}</p>
-    ${c.group==='sources'?'':`<p class="description paper-role">${esc(c.inPaper)}</p>`}
+    <h3>${c.group==='sources'?'用途':'在论文中怎么用'}</h3><p class="description">${esc(context.use||c.use)}</p>
+    ${c.group==='sources'?'':`<p class="description paper-role">${esc(context.inPaper||c.inPaper)}</p>`}
     <h3>适用条件</h3><p class="description">${esc(c.condition)}</p>
     ${c.related.length?'<h3>关联概念</h3><ul class="related" id="related"></ul>':''}
     <h3>集智资料</h3><a class="source-link" target="_blank" rel="noopener noreferrer" href="${esc(c.source.url)}">${esc(c.source.title)}<small>${esc(new URL(c.source.url).hostname)}</small></a>
@@ -143,7 +145,7 @@ function showDetail(c) {
   for(const relation of c.related){
     const li=document.createElement('li'),target=concepts.get(relation.id);
     const b=button(target.name,()=>selectConcept(target.id));
-    const small=document.createElement('small');small.textContent=relation.label==='参见'?groups.get(target.group).title:relation.label;b.append(small);li.append(b);$('#related').append(li);
+    const small=document.createElement('small');small.textContent=relation.label==='参见'?groups.get(target.groups.includes(activeGroup)?activeGroup:target.group).title:relation.label;b.append(small);li.append(b);$('#related').append(li);
   }
   $('#detail-body').scrollTop=0;
 }
@@ -158,7 +160,7 @@ function search() {
   $('#search-status').textContent=searchMatches.length?`找到 ${searchMatches.length} 个结果`:'没有找到匹配概念';
   for(const c of searchMatches) {
     const b=button(c.name,()=>selectConcept(c.id),'search-result');b.id=`result-${c.id}`;b.tabIndex=-1;b.setAttribute('role','option');b.setAttribute('aria-selected','false');
-    const sub=document.createElement('small');sub.textContent=groups.get(c.group).title+' / '+c.en;b.append(sub);$('#search-results').append(b);
+    const sub=document.createElement('small');sub.textContent=c.groups.map(id=>groups.get(id).title).join('、')+' / '+c.en;b.append(sub);$('#search-results').append(b);
   }
   $('#search-popover').hidden=false;$('#search').setAttribute('aria-expanded','true');
 }
@@ -175,8 +177,11 @@ function route() {
   let id;try{id=decodeURIComponent(location.hash.slice(1));}catch{setDepth(1,false);return;}
   if(id==='all')setDepth(3,false);
   else if(id==='level-2')setDepth(2,false);
-  else if(concepts.has(id))selectConcept(id,false);
-  else if(entries.has(id))goBranch(id);
+  else if(concepts.has(id))selectConcept(id,false,id);
+  else if(entries.has(id)){
+    const node=entries.get(id).node;
+    if(node.type==='concept')selectConcept(node.conceptId,false,id);else goBranch(id);
+  }
   // Preserve previously shared group links; concept links keep their existing IDs.
   else if(groups.has(id))goBranch(groupNodeId(id));
   else setDepth(1,false);
@@ -187,12 +192,12 @@ async function init() {
     const response=await fetch(document.querySelector('script[data-source]').dataset.source);
     if(!response.ok) throw new Error(`HTTP ${response.status}`);
     data=await response.json();concepts=new Map(data.concepts.map(c=>[c.id,c]));groups=new Map(data.groups.map(g=>[g.id,g]));
-    const leaf=(id,group,parent,depth)=>({id,name:concepts.get(id).name,type:'concept',group,parent,depth});
+    const leaf=(id,group,parent,depth)=>({id:concepts.get(id).group===group?id:`${group}--${id}`,conceptId:id,name:concepts.get(id).name,type:'concept',group,parent,depth});
     tree=data.groups.map(g=>({id:groupNodeId(g.id),name:g.title,type:'group',group:g.id,parent:null,depth:1,count:g.concepts.length,
       children:g.sections.length?g.sections.map(s=>({id:s.id,name:s.title,type:'section',group:g.id,parent:groupNodeId(g.id),depth:2,count:s.concepts.length,
         children:s.concepts.map(id=>leaf(id,g.id,s.id,3))})):g.concepts.map(id=>leaf(id,g.id,groupNodeId(g.id),2))}));
     entries.clear();outline.replaceChildren();buildList(tree,outline);
-    for(const c of data.concepts)c.searchText=[c.name,c.en,c.meaning,c.formula,c.symbols,c.use,c.condition,c.intuition,c.reading,c.example,c.inPaper,groups.get(c.group).title].join(' ').toLocaleLowerCase();
+    for(const c of data.concepts)c.searchText=[c.name,c.en,c.meaning,c.formula,c.symbols,c.use,c.condition,c.intuition,c.reading,c.example,c.inPaper,...c.groups.map(id=>groups.get(id).title),...Object.values(c.contexts).flatMap(context=>Object.values(context))].join(' ').toLocaleLowerCase();
     $('#search').disabled=false;
     search();route();
   } catch(error) {$('#load-error').hidden=false;console.error(error);}
