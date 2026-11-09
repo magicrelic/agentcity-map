@@ -1,6 +1,7 @@
 const $ = selector => document.querySelector(selector);
 const viewport = $('#viewport'), world = $('#world'), nodesElement = $('#nodes'), edges = $('#edges');
 const detail = $('#detail'), tooltip = $('#group-tooltip');
+const depthControl = $('#expand-depth'), depthNames = ['','知识组','专题','概念'];
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let data, concepts, groups, sections, parentSection, tree, positions = new Map();
 let expanded = new Set(), activeGroup = null, selected = null, view = {x:0,y:0,scale:1};
@@ -56,7 +57,8 @@ function fit() {
   const b=bounds(items), w=viewport.clientWidth, h=viewport.clientHeight;
   if(readableOverview){
     view.scale=Math.max(.75,Math.min(1,(w-60)/(b.right-b.left)));
-    const left=w<600?items.find(n=>n.type==='concept').x:b.left;
+    const deepest=Math.max(...items.map(n=>n.depth));
+    const left=w<600?items.find(n=>n.depth===deepest).x:b.left;
     view.x=30-left*view.scale;view.y=32-b.top*view.scale;
   } else {
     view.scale=Math.max(.03,Math.min(1.1,(w-60)/(b.right-b.left),(h-100)/(b.bottom-b.top)));
@@ -81,10 +83,10 @@ function layout() {
   };
   tree.forEach(measure);
   const height=tree.reduce((sum,n)=>sum+n.span,0)+(tree.length-1)*32;
-  const root={id:'root',name:data.title,type:'root',x:0,y:(height-80)/2,w:230,h:80,group:null};
+  const root={id:'root',name:data.title,type:'root',depth:0,x:0,y:(height-80)/2,w:230,h:80,group:null};
   positions.set('root',root);
   const place=(n,parent,top)=>{
-    n.x=parent.x+parent.w+72;n.y=top+(n.span-n.h)/2;
+    n.depth=parent.depth+1;n.x=parent.x+parent.w+72;n.y=top+(n.span-n.h)/2;
     positions.set(n.id,n);
     let cursor=top;
     for(const child of visibleChildren(n)){place(child,n,cursor);cursor+=child.span+18;}
@@ -92,8 +94,9 @@ function layout() {
   let top=0;
   for(const n of tree){place(n,root,top);top+=n.span+32;}
 }
-function branchIds() {return [...groups.keys()].map(groupNodeId).concat([...sections.keys()]);}
-function allExpanded() {return branchIds().every(id=>expanded.has(id));}
+function expansionAt(level) {
+  return new Set(level===1?[]:[...groups.keys()].map(groupNodeId).concat(level===3?[...sections.keys()]:[]));
+}
 function render() {
   hideGroupGuide();
   const focused=document.activeElement?.dataset?.id;
@@ -121,13 +124,16 @@ function render() {
     if(n.children?.length){const count=document.createElement('span');count.className='node-count';count.textContent=expanded.has(n.id)?'−':`＋ ${n.count}`;b.append(count);}
     nodesElement.append(b);
   }
-  $('#toggle-all').disabled=false;
-  $('#toggle-all').textContent=allExpanded()?'折叠所有':'展开所有';
-  $('#toggle-all').setAttribute('aria-expanded',String(allExpanded()));
+  const level=Math.max(...[...positions.values()].map(n=>n.depth)), preset=expansionAt(level);
+  const visibleBranches=[...positions.values()].filter(n=>n.children?.length&&expanded.has(n.id));
+  const partial=preset.size!==visibleBranches.length||visibleBranches.some(n=>!preset.has(n.id));
+  depthControl.disabled=false;depthControl.value=level;depthControl.dataset.partial=String(partial);
+  depthControl.setAttribute('aria-valuetext',partial?`局部展开，最深 ${level} 级`:`${level} 级，${depthNames[level]}`);
+  $('#depth-label').textContent=`${level} 级 · ${partial?'局部':depthNames[level]}`;
   if(focused) nodesElement.querySelector(`[data-id="${focused}"]`)?.focus({preventScroll:true});
 }
 function activate(n) {
-  if(n.type==='root') return overview();
+  if(n.type==='root') return setDepth(1);
   if(n.type==='concept') return selectConcept(n.id);
   readableOverview=false;
   if(n.type==='group') {
@@ -145,14 +151,11 @@ function goGroup(id, updateHash=true) {
   activeGroup=id;expanded.add(groupNodeId(id));hideDetail();closeSearch();
   if(updateHash) setHash(groupNodeId(id));render();fit();
 }
-function overview(updateHash=true) {
-  readableOverview=false;
-  activeGroup=null;expanded.clear();hideDetail();closeSearch();
-  if(updateHash) setHash('');render();fit();
-}
-function expandAll(updateHash=true) {
-  expanded=new Set(branchIds());activeGroup=null;readableOverview=true;
-  hideDetail();closeSearch();if(updateHash)setHash('all');render();fit();
+function setDepth(level,updateHash=true) {
+  expanded=expansionAt(level);activeGroup=null;readableOverview=level>1;
+  hideDetail();closeSearch();
+  if(updateHash)setHash(level===1?'':level===3?'all':'level-2');
+  render();fit();
 }
 function hideDetail() {
   selected=null;if(detail.open)detail.close();
@@ -221,13 +224,14 @@ function stepSearch(direction) {
   buttons[activeResult].scrollIntoView({block:'nearest'});
 }
 function route() {
-  let id;try{id=decodeURIComponent(location.hash.slice(1));}catch{overview(false);return;}
-  if(id==='all')expandAll(false);
+  let id;try{id=decodeURIComponent(location.hash.slice(1));}catch{setDepth(1,false);return;}
+  if(id==='all')setDepth(3,false);
+  else if(id==='level-2')setDepth(2,false);
   else if(concepts.has(id))selectConcept(id,false);
   else if(id.startsWith('group-')&&groups.has(id.slice(6)))goGroup(id.slice(6),false);
   // Preserve previously shared group links; concept links keep their existing IDs.
   else if(groups.has(id))goGroup(id,false);
-  else overview(false);
+  else setDepth(1,false);
 }
 async function init() {
   try {
@@ -251,8 +255,14 @@ $('#search').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!$('#search-popover').hidden){e.preventDefault();const c=searchMatches[Math.max(activeResult,0)];if(c)selectConcept(c.id);}
 });
 $('#clear-search').addEventListener('click',()=>{$('#search').value='';search();$('#search').focus();});
-$('#overview').addEventListener('click',()=>{if(data)overview();});
-$('#toggle-all').addEventListener('click',()=>{if(data){if(allExpanded())overview();else expandAll();}});
+$('#overview').addEventListener('click',()=>{if(data)setDepth(1);});
+depthControl.addEventListener('input',()=>{if(data)setDepth(Number(depthControl.value));});
+depthControl.addEventListener('click',()=>{if(data&&depthControl.dataset.partial==='true')setDepth(Number(depthControl.value));});
+depthControl.addEventListener('keydown',event=>{
+  if(data&&['Enter',' ','Home','End'].includes(event.key)){
+    event.preventDefault();setDepth(event.key==='Home'?1:event.key==='End'?3:Number(depthControl.value));
+  }
+});
 $('#fit').addEventListener('click',()=>{readableOverview=false;fit();});$('#zoom-in').addEventListener('click',()=>zoom(1.2));$('#zoom-out').addEventListener('click',()=>zoom(1/1.2));
 $('#close-detail').addEventListener('click',closeDetail);
 detail.addEventListener('cancel',event=>{event.preventDefault();closeDetail();});

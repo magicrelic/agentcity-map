@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="light"><title>复杂系统研究 - 概念与数学工具</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="katex/katex.min.css">
-  <link rel="stylesheet" href="style.css?v=792bf4d607713fe5c172bea85704628eb3748ec15e9c6e044081a771d5275e80">
-  <script type="module" src="app.js?v=792bf4d607713fe5c172bea85704628eb3748ec15e9c6e044081a771d5275e80" data-source="data.json?v=792bf4d607713fe5c172bea85704628eb3748ec15e9c6e044081a771d5275e80"></script>
+  <link rel="stylesheet" href="style.css?v=43253bbb109007f3f3972098b3debaab3b720c081b99be61e24e828496653dc0">
+  <script type="module" src="app.js?v=43253bbb109007f3f3972098b3debaab3b720c081b99be61e24e828496653dc0" data-source="data.json?v=43253bbb109007f3f3972098b3debaab3b720c081b99be61e24e828496653dc0"></script>
 </head>
 <body>
   <a class="skip" href="#search">跳到概念搜索</a>
@@ -20,7 +20,11 @@
         <div id="search-results" role="listbox" aria-label="搜索结果"></div>
       </div>
     </div>
-    <button id="toggle-all" class="toggle-all" aria-controls="nodes" aria-expanded="false" disabled>展开所有</button>
+    <div class="depth-control">
+      <div class="depth-heading"><label for="expand-depth">展开层级</label><output id="depth-label" for="expand-depth">1 级 · 知识组</output></div>
+      <input id="expand-depth" type="range" min="1" max="3" step="1" value="1" list="depth-stops" aria-controls="nodes" aria-valuetext="1 级，知识组" disabled>
+      <datalist id="depth-stops"><option value="1"></option><option value="2"></option><option value="3"></option></datalist>
+    </div>
   </header>
   <main class="workspace">
     <section class="map-area" aria-label="交互思维导图">
