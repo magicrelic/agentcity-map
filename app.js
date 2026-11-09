@@ -1,11 +1,12 @@
+import { renderRelations } from './graph.js?v=3d278209809959179f81534c60547fc5a40c8d665ee4e67c85e67889f5d54cf0';
 const $ = selector => document.querySelector(selector);
 const browse = $('#browse'), outline = $('#outline'), entries = new Map();
 const detail = $('#detail'), tooltip = $('#group-tooltip');
 const depthControl = $('#expand-depth'), depthNames = ['','知识组','专题','概念'];
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let data, concepts, groups, tree;
+let data, concepts, groups, resources, figures, tree;
 let expanded = new Set(), activeGroup = null, selected = null;
-let focusBeforeDetail = null;
+let focusBeforeDetail = null, disposeGraph = null;
 let searchMatches = [], activeResult = -1, tooltipAnchor = null, tooltipTimer;
 const groupNodeId = id => `group-${id}`;
 function button(label, action, className = '') {
@@ -107,6 +108,7 @@ function setDepth(level,updateHash=true) {
   render();browse.scrollTop=0;
 }
 function hideDetail() {
+  disposeGraph?.();disposeGraph=null;
   selected=null;if(detail.open)detail.close();
 }
 function closeDetail() {
@@ -127,28 +129,37 @@ function selectConcept(id,updateHash=true,entryId=null) {
   $('#detail-title').focus({preventScroll:true});
 }
 function showDetail(c) {
-  const g=groups.get(activeGroup), context=c.contexts[activeGroup]||{};
-  $('#detail-group').textContent=g.title;$('#copy-status').textContent='';
-  $('#detail-body').innerHTML=`<h2 id="detail-title" tabindex="-1">${esc(c.name)}</h2>
-    <p class="english">${esc(c.en)}</p><span class="kind">${esc(c.kind)}</span>
-    <p class="meaning">${esc(c.meaning)}</p>
-    ${c.group==='sources'?'':`<h3>直觉与区别</h3><p class="description">${esc(c.intuition)}</p>
-      <h3>代表公式与读法</h3><div class="formula">${c.formulaHtml}</div><p class="symbols">${esc(c.symbols)}</p>
-      <p class="description formula-reading">${esc(c.reading)}</p>
-      <h3>具体例子</h3><p class="description example">${esc(c.example)}</p>`}
-    <h3>${c.group==='sources'?'用途':'在论文中怎么用'}</h3><p class="description">${esc(context.use||c.use)}</p>
-    ${c.group==='sources'?'':`<p class="description paper-role">${esc(context.inPaper||c.inPaper)}</p>`}
-    <h3>适用条件</h3><p class="description">${esc(c.condition)}</p>
-    ${c.related.length?'<h3>关联概念</h3><ul class="related" id="related"></ul>':''}
-    <h3>集智资料</h3><a class="source-link" target="_blank" rel="noopener noreferrer" href="${esc(c.source.url)}">${esc(c.source.title)}<small>${esc(new URL(c.source.url).hostname)}</small></a>
-    ${c.references.length?`<h3>延伸阅读</h3>${c.references.map(r=>`<a class="reference-link" target="_blank" rel="noopener noreferrer" href="${esc(r.url)}">${esc(r.title)}<small>${esc(new URL(r.url).hostname)}</small></a>`).join('')}`:''}`;
-  for(const relation of c.related){
-    const li=document.createElement('li'),target=concepts.get(relation.id);
-    const b=button(target.name,()=>selectConcept(target.id));
-    const small=document.createElement('small');small.textContent=relation.label==='参见'?groups.get(target.groups.includes(activeGroup)?activeGroup:target.group).title:relation.label;b.append(small);li.append(b);$('#related').append(li);
-  }
+  disposeGraph?.();disposeGraph=null;
+  $('#detail-group').textContent=groups.get(activeGroup).title;$('#copy-status').textContent='';
+  const adjacent=data.relations.filter(r=>r.source===c.id||r.target===c.id);
+  const illustrations=c.figures.map(id=>figures.get(id));
+  const referenceIds=[...new Set([...c.references,...illustrations.flatMap(f=>f.references),...adjacent.flatMap(r=>r.references)])];
+  const paragraphs=items=>items.map(text=>`<p class="description">${esc(text)}</p>`).join('');
+  const chapter=(id,title,body)=>`<section class="concept-chapter" id="chapter-${id}" aria-labelledby="heading-${id}"><h3 id="heading-${id}">${title}</h3>${body}</section>`;
+  const figureHtml=illustrations.map(f=>`<figure class="concept-figure"><img src="${esc(f.src)}" alt="${esc(f.alt)}" loading="lazy"><figcaption>${esc(f.caption)} <button class="reference-jump" data-reference="${esc(f.references[0])}">图片来源</button></figcaption></figure>`).join('');
+  const referenceHtml=`<ol class="reference-list">${referenceIds.map(id=>{
+    const r=resources.get(id);
+    return `<li id="ref-${esc(id)}">${r.url?`<a target="_blank" rel="noopener noreferrer" href="${esc(r.url)}">${esc(r.title)}</a>`:`<span>${esc(r.title)}</span>`}
+      ${r.url?`<small>${esc(new URL(r.url).hostname)}</small>`:''}
+      ${r.author?`<p>${esc(r.author)}</p>`:''}${r.note?`<p>${esc(r.note)}</p>`:''}
+      ${r.license?`<p>${r.licenseUrl?`<a target="_blank" rel="noopener noreferrer" href="${esc(r.licenseUrl)}">${esc(r.license)}</a>`:esc(r.license)}</p>`:''}</li>`;
+  }).join('')}</ol>`;
+  const chapters=[['explanation','概念解释'],...(c.math?[['math','数学描述']]:[]),...(c.examples.length||illustrations.length?[['examples','例子与图解']]:[]),...(adjacent.length?[['relations','关联概念']]:[]),['references','参考资料']];
+  $('#detail-body').innerHTML=`<h2 id="detail-title" tabindex="-1">${esc(c.name)}</h2><p class="english">${esc(c.en)}</p>
+    <p class="meaning">${esc(c.summary)}</p>
+    <nav class="chapter-nav" aria-label="概念章节">${chapters.map(([id,title])=>`<button data-chapter="${id}">${title}</button>`).join('')}</nav>
+    ${chapter('explanation','概念解释',paragraphs(c.description))}
+    ${c.math?chapter('math','数学描述',`<div class="formula">${c.math.formulaHtml}</div><p class="symbols">${esc(c.math.symbols)}</p>${paragraphs(c.math.explanation)}<p class="description conditions">${esc(c.math.conditions)}</p>`):''}
+    ${c.examples.length||illustrations.length?chapter('examples','例子与图解',paragraphs(c.examples)+figureHtml):''}
+    ${adjacent.length?chapter('relations','关联概念','<div id="relations"></div>'):''}
+    ${chapter('references','参考资料',referenceHtml)}`;
+  if(adjacent.length)disposeGraph=renderRelations($('#relations'),{concept:c,concepts,relations:data.relations,types:data.relationTypes,onSelect:selectConcept});
+  const scrollTo=target=>{target.scrollIntoView({block:'start',behavior:'instant'});target.tabIndex=-1;target.focus({preventScroll:true});};
+  for(const b of document.querySelectorAll('[data-chapter]'))b.addEventListener('click',()=>scrollTo($(`#heading-${b.dataset.chapter}`)));
+  for(const b of document.querySelectorAll('[data-reference]'))b.addEventListener('click',()=>scrollTo($(`#ref-${b.dataset.reference}`)));
   $('#detail-body').scrollTop=0;
 }
+
 function search() {
   const query=$('#search').value.trim().toLocaleLowerCase(), terms=query.split(/\s+/);
   hideGroupGuide();activeResult=-1;$('#search').removeAttribute('aria-activedescendant');
@@ -191,13 +202,13 @@ async function init() {
     $('#load-error').hidden=true;
     const response=await fetch(document.querySelector('script[data-source]').dataset.source);
     if(!response.ok) throw new Error(`HTTP ${response.status}`);
-    data=await response.json();concepts=new Map(data.concepts.map(c=>[c.id,c]));groups=new Map(data.groups.map(g=>[g.id,g]));
+    data=await response.json();concepts=new Map(data.concepts.map(c=>[c.id,c]));groups=new Map(data.groups.map(g=>[g.id,g]));resources=new Map(data.resources.map(r=>[r.id,r]));figures=new Map(data.figures.map(f=>[f.id,f]));
     const leaf=(id,group,parent,depth)=>({id:concepts.get(id).group===group?id:`${group}--${id}`,conceptId:id,name:concepts.get(id).name,type:'concept',group,parent,depth});
     tree=data.groups.map(g=>({id:groupNodeId(g.id),name:g.title,type:'group',group:g.id,parent:null,depth:1,count:g.concepts.length,
       children:g.sections.length?g.sections.map(s=>({id:s.id,name:s.title,type:'section',group:g.id,parent:groupNodeId(g.id),depth:2,count:s.concepts.length,
         children:s.concepts.map(id=>leaf(id,g.id,s.id,3))})):g.concepts.map(id=>leaf(id,g.id,groupNodeId(g.id),2))}));
     entries.clear();outline.replaceChildren();buildList(tree,outline);
-    for(const c of data.concepts)c.searchText=[c.name,c.en,c.meaning,c.formula,c.symbols,c.use,c.condition,c.intuition,c.reading,c.example,c.inPaper,...c.groups.map(id=>groups.get(id).title),...Object.values(c.contexts).flatMap(context=>Object.values(context))].join(' ').toLocaleLowerCase();
+    for(const c of data.concepts)c.searchText=[c.name,c.en,c.summary,...c.description,c.math?.latex,c.math?.symbols,...(c.math?.explanation||[]),c.math?.conditions,...c.examples,...c.groups.map(id=>groups.get(id).title)].join(' ').toLocaleLowerCase();
     $('#search').disabled=false;
     search();route();
   } catch(error) {$('#load-error').hidden=false;console.error(error);}

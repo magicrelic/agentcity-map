@@ -1,12 +1,17 @@
 {
-  "version": "d38fe0a8f3abe47703cf702d5f284847bd40a5d3b283de39630902ad30f05f82",
-  "concepts": 183,
+  "version": "56af9896aa564f1ab287c56cd2133c986531fd8f7640b14e5a1ac5eccc30e97d",
+  "concepts": 209,
+  "relations": 259,
   "files": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "app.js": "6d379af15b1dd325593d9bd20aaf2fccb91b4cb29f2d6589046b4d63ac63b840",
-    "data.json": "bde65be00011c7fd4ca92d82fc003f3d8fc37e303571b7a5edebf6a4dea27d12",
-    "icon.svg": "49c0c0fcacea43ff3a0dd509d36750ff414d11805e9833bf02eeff710ff0a20a",
-    "index.html": "106a176b9bce8ffc222da7efb3f6bb4d89228452723a0c5dc39b6d9bf962392c",
+    "app.js": "fa8128d850a51c3c37409218a88847868c5b2cf5a64bfb0005cd7d2a799a8d8f",
+    "assets/icon.svg": "49c0c0fcacea43ff3a0dd509d36750ff414d11805e9833bf02eeff710ff0a20a",
+    "assets/order-configurations.svg": "e5bdb500f02f9b16519fb21546d4b3c0af1a7062b583b45ac045b9a46d75e3fe",
+    "assets/probability-currents.svg": "82f2a9291164c11d0cebb416ed7ca38cd5161c92f76fa6ea920b76b5fce1a1ea",
+    "assets/small-world.svg": "f2c9f1cf471344e62763e52a3073cbcf26340d7ddb7412bd36e44c27c6f4be68",
+    "data.json": "61ddadabea0d46f45a4dfe578ce5ffe1fd88a9bf9505d3ae04eeeac3f2b17dbf",
+    "graph.js": "fc6838d534fce592169ec901d7866be2f220d1e56b7aec39dd95a1e501d43a3b",
+    "index.html": "dea8f5b953ff9eb8235a2fb9c85934914226ffbebd7cece1ce70ad0d00e522e5",
     "katex/fonts/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
     "katex/fonts/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
     "katex/fonts/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
@@ -69,6 +74,6 @@
     "katex/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
     "katex/katex.min.css": "d4ab5b8ee16989b070cdb0ea24bd6ad48fc8df1b787f280f29d3ae4f959f2c00",
     "katex/LICENSE.txt": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3",
-    "style.css": "2ca7755bf7f7bcbec2e85c77e7daa6e2903a8bdf64185636f04f4c8011050659"
+    "style.css": "e72a7ed782de9fff7949f2630b771a403ceaf643b7a74ec57cb3632fc9049e00"
   }
 }
