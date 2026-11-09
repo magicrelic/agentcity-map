@@ -2,12 +2,12 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="复杂系统研究的概念与数学工具：从数学基础、动力系统、网络科学到推断、学习和控制的一张交互思维导图。">
+  <meta name="description" content="复杂系统研究的概念与数学工具：按知识组、专题和概念逐级展开，查看解释、公式及学习资料。">
   <meta name="color-scheme" content="light"><title>复杂系统研究 - 概念与数学工具</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="katex/katex.min.css">
-  <link rel="stylesheet" href="style.css?v=43253bbb109007f3f3972098b3debaab3b720c081b99be61e24e828496653dc0">
-  <script type="module" src="app.js?v=43253bbb109007f3f3972098b3debaab3b720c081b99be61e24e828496653dc0" data-source="data.json?v=43253bbb109007f3f3972098b3debaab3b720c081b99be61e24e828496653dc0"></script>
+  <link rel="stylesheet" href="style.css?v=ebaddb6bb2c5d4ead274fb9fde1eea3ccae2326ee07bdfe3cd1ffc19638514ef">
+  <script type="module" src="app.js?v=ebaddb6bb2c5d4ead274fb9fde1eea3ccae2326ee07bdfe3cd1ffc19638514ef" data-source="data.json?v=ebaddb6bb2c5d4ead274fb9fde1eea3ccae2326ee07bdfe3cd1ffc19638514ef"></script>
 </head>
 <body>
   <a class="skip" href="#search">跳到概念搜索</a>
@@ -22,18 +22,13 @@
     </div>
     <div class="depth-control">
       <div class="depth-heading"><label for="expand-depth">展开层级</label><output id="depth-label" for="expand-depth">1 级 · 知识组</output></div>
-      <input id="expand-depth" type="range" min="1" max="3" step="1" value="1" list="depth-stops" aria-controls="nodes" aria-valuetext="1 级，知识组" disabled>
+      <input id="expand-depth" type="range" min="1" max="3" step="1" value="1" list="depth-stops" aria-controls="outline" aria-valuetext="1 级，知识组" disabled>
       <datalist id="depth-stops"><option value="1"></option><option value="2"></option><option value="3"></option></datalist>
     </div>
   </header>
-  <main class="workspace">
-    <section class="map-area" aria-label="交互思维导图">
-      <div id="viewport" tabindex="0" aria-label="导图画布，拖动平移，滚轮缩放；也可使用下方缩放按钮">
-        <div id="world"><svg id="edges" aria-hidden="true"></svg><div id="nodes"></div></div>
-      </div>
-      <div class="map-tools" aria-label="画布操作"><button id="overview">全图</button><span></span><button id="zoom-out" aria-label="缩小">−</button><output id="zoom-label" aria-live="off">100%</output><button id="zoom-in" aria-label="放大">＋</button><span></span><button id="fit">适应视图</button></div>
-      <div id="load-error" class="load-error" role="alert" hidden><p>导图暂时无法加载，请重新尝试。</p><button id="retry">重新加载</button></div>
-    </section>
+  <main id="browse" class="workspace" aria-label="概念目录" tabindex="-1">
+    <ul id="outline" class="outline" aria-label="知识组与资料来源"></ul>
+    <div id="load-error" class="load-error" role="alert" hidden><p>目录暂时无法加载，请重新尝试。</p><button id="retry">重新加载</button></div>
   </main>
   <div id="group-tooltip" class="group-tooltip" role="tooltip" hidden><strong id="group-tooltip-title"></strong><p id="group-tooltip-body"></p></div>
   <dialog id="detail" class="detail" aria-labelledby="detail-title">
@@ -41,6 +36,6 @@
     <div id="detail-body" class="detail-body"></div>
     <div class="detail-bottom"><button id="copy-link">复制概念链接</button><span id="copy-status" role="status"></span></div>
   </dialog>
-  <noscript>请启用 JavaScript，以展开导图、搜索概念和查看详情。</noscript>
+  <noscript>请启用 JavaScript，以展开目录、搜索概念和查看详情。</noscript>
 </body>
 </html>
