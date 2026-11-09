@@ -1,4 +1,4 @@
-import { renderRelations } from './graph.js?v=3d278209809959179f81534c60547fc5a40c8d665ee4e67c85e67889f5d54cf0';
+import { renderRelations } from './graph.js?v=4844c11918a7fa78224716440bd91c4b6e4ad852e2e200e237d99e74a1603db8';
 const $ = selector => document.querySelector(selector);
 const browse = $('#browse'), outline = $('#outline'), entries = new Map();
 const detail = $('#detail'), tooltip = $('#group-tooltip');
@@ -153,7 +153,7 @@ function showDetail(c) {
     ${c.examples.length||illustrations.length?chapter('examples','例子与图解',paragraphs(c.examples)+figureHtml):''}
     ${adjacent.length?chapter('relations','关联概念','<div id="relations"></div>'):''}
     ${chapter('references','参考资料',referenceHtml)}`;
-  if(adjacent.length)disposeGraph=renderRelations($('#relations'),{concept:c,concepts,relations:data.relations,types:data.relationTypes,onSelect:selectConcept});
+  if(adjacent.length)disposeGraph=renderRelations($('#relations'),{concept:c,concepts,relations:data.relations,onSelect:selectConcept});
   const scrollTo=target=>{target.scrollIntoView({block:'start',behavior:'instant'});target.tabIndex=-1;target.focus({preventScroll:true});};
   for(const b of document.querySelectorAll('[data-chapter]'))b.addEventListener('click',()=>scrollTo($(`#heading-${b.dataset.chapter}`)));
   for(const b of document.querySelectorAll('[data-reference]'))b.addEventListener('click',()=>scrollTo($(`#ref-${b.dataset.reference}`)));

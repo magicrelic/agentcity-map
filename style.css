@@ -123,15 +123,11 @@ h1,h2,h3,p { margin:0; }
 .reference-list li { padding:11px 0; border-bottom:1px solid var(--line); scroll-margin-top:15px; font-size:13px; line-height:1.85; overflow-wrap:anywhere; }
 .reference-list small { display:block; color:var(--muted); font-size:11px; }
 .reference-list p { margin-top:4px; color:var(--muted); font-size:12px; }
-.relation-tools { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; font-size:12px; }
-.relation-tools label { display:flex; align-items:center; gap:8px; }
-.relation-filter { padding:6px 26px 6px 9px; color:var(--ink); background:white; border:1px solid var(--line); border-radius:4px; font:inherit; }
-.relation-status { color:var(--muted); }
+.relation-status { color:var(--muted); font-size:12px; text-align:right; }
 .graph-frame { max-width:100%; overflow-x:auto; margin-top:12px; background:linear-gradient(0deg,#f9fbfc,#fff); border-block:1px solid var(--line); }
 .graph-frame svg { display:block; width:720px; height:440px; margin:auto; }
 .relation-edge { stroke:#8a9daa; stroke-width:1.5; }
 .relation-edge.highlighted { stroke:var(--accent); stroke-width:2.5; }
-.edge-label { font-size:11px; fill:#5d707d; paint-order:stroke; stroke:white; stroke-width:5px; stroke-linejoin:round; }
 .graph-center circle { fill:var(--accent); stroke:var(--accent); stroke-width:2; }
 .graph-center .node-label { fill:white; font-weight:600; }
 .graph-node { cursor:pointer; outline:none; }
@@ -151,9 +147,14 @@ h1,h2,h3,p { margin:0; }
 @media(max-width:760px) {
  .chapter-nav { gap:2px 17px; }
  .chapter-nav button { padding:6px 0; }
- .relation-filter { font-size:16px; }
 }
 .graph-frame.compact svg{width:320px;min-width:0;max-width:100%;height:auto;margin-inline:auto;}
 .graph-frame.compact .node-label{font-size:14px;}
 .graph-frame.compact .edge-label{font-size:12px;}
 .relation-pages[hidden]{display:none;}
+.concept-preview { position:fixed; inset:auto; margin:0; width:min(320px,calc(100vw - 24px)); padding:16px 18px; border:1px solid #b6cbd9; border-radius:8px; box-shadow:0 8px 28px #18364a1a; background:var(--paper); color:var(--ink); font:13px/1.85 var(--sans); }
+.concept-preview strong { display:block; font-size:14px; font-weight:650; }
+.preview-english { color:var(--muted); font-size:12px; margin:4px 0 10px; }
+.preview-description { font-size:13px; }
+.graph-center:focus-visible { outline:none; }
+.graph-center:focus-visible circle { stroke:#7195ad; stroke-width:4; }
