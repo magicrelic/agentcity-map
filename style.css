@@ -115,7 +115,7 @@ h1,h2,h3,p { margin:0; }
 .concept-chapter h3:focus,.reference-list li:focus { outline:none; }
 .concept-chapter h3:focus-visible,.reference-list li:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
 .concept-figure { margin:24px 0 8px; }
-.concept-figure img { display:block; width:100%; height:auto; background:white; }
+.concept-figure img { display:block; width:100%; max-width:600px; height:auto; margin-inline:auto; background:white; }
 .concept-figure figcaption { margin-top:12px; font-size:13px; line-height:1.9; color:var(--muted); }
 .reference-jump { border:0; padding:0 3px; background:none; text-decoration:underline; text-underline-offset:3px; color:var(--accent); font-size:inherit; }
 .reference-list { padding-left:22px; }

@@ -1,4 +1,4 @@
-import { renderRelations } from './graph.js?v=56a482069c2bd346656e00375d62966dc5100d2ac748e5e9a3bda38f7ed15bfc';
+import { renderRelations } from './graph.js?v=2fac7d3d9893618e0ee6fc4fe7ba4bcb660a0441c41d9be6cbd167ca86209194';
 const $ = selector => document.querySelector(selector);
 const browse = $('#browse'), outline = $('#outline'), entries = new Map();
 const detail = $('#detail'), tooltip = $('#group-tooltip');
