@@ -1,4 +1,4 @@
-import { renderRelations } from './graph.js?v=4844c11918a7fa78224716440bd91c4b6e4ad852e2e200e237d99e74a1603db8';
+import { renderRelations } from './graph.js?v=56a482069c2bd346656e00375d62966dc5100d2ac748e5e9a3bda38f7ed15bfc';
 const $ = selector => document.querySelector(selector);
 const browse = $('#browse'), outline = $('#outline'), entries = new Map();
 const detail = $('#detail'), tooltip = $('#group-tooltip');
@@ -149,7 +149,7 @@ function showDetail(c) {
     <p class="meaning">${esc(c.summary)}</p>
     <nav class="chapter-nav" aria-label="概念章节">${chapters.map(([id,title])=>`<button data-chapter="${id}">${title}</button>`).join('')}</nav>
     ${chapter('explanation','概念解释',paragraphs(c.description))}
-    ${c.math?chapter('math','数学描述',`<div class="formula">${c.math.formulaHtml}</div><p class="symbols">${esc(c.math.symbols)}</p>${paragraphs(c.math.explanation)}<p class="description conditions">${esc(c.math.conditions)}</p>`):''}
+    ${c.math?chapter('math','数学描述',`<div class="formula">${c.math.formulaHtml}</div><p class="symbols">${esc(c.math.symbols)}</p>${paragraphs(c.math.explanation)}`):''}
     ${c.examples.length||illustrations.length?chapter('examples','例子与图解',paragraphs(c.examples)+figureHtml):''}
     ${adjacent.length?chapter('relations','关联概念','<div id="relations"></div>'):''}
     ${chapter('references','参考资料',referenceHtml)}`;
@@ -208,7 +208,7 @@ async function init() {
       children:g.sections.length?g.sections.map(s=>({id:s.id,name:s.title,type:'section',group:g.id,parent:groupNodeId(g.id),depth:2,count:s.concepts.length,
         children:s.concepts.map(id=>leaf(id,g.id,s.id,3))})):g.concepts.map(id=>leaf(id,g.id,groupNodeId(g.id),2))}));
     entries.clear();outline.replaceChildren();buildList(tree,outline);
-    for(const c of data.concepts)c.searchText=[c.name,c.en,c.summary,...c.description,c.math?.latex,c.math?.symbols,...(c.math?.explanation||[]),c.math?.conditions,...c.examples,...c.groups.map(id=>groups.get(id).title)].join(' ').toLocaleLowerCase();
+    for(const c of data.concepts)c.searchText=[c.name,c.en,c.summary,...c.description,c.math?.latex,c.math?.symbols,...(c.math?.explanation||[]),...c.examples,...c.groups.map(id=>groups.get(id).title)].join(' ').toLocaleLowerCase();
     $('#search').disabled=false;
     search();route();
   } catch(error) {$('#load-error').hidden=false;console.error(error);}

@@ -1,17 +1,20 @@
 {
-  "version": "e93a9528ab412ee68e6e510e076ad92ae27bc12979c59532b124d75d0dbe257a",
-  "concepts": 209,
-  "relations": 259,
+  "version": "b5be8f47294317f9f38ced62349b6f7be616b1231e5d321b1308af15fa5e83c9",
+  "concepts": 250,
+  "relations": 333,
   "files": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "app.js": "431124fc16f0a9799daa236331960f293bebd2f23f9b12631f0cb5ab5d9fda27",
+    "app.js": "46fb19c4a1e6ccc14ad7c75383a7fcb3b64ecb74ba17a39029968ea459e30e03",
+    "assets/hypergraph-groups.svg": "a285b2281e6975893736634160d1bf45bf576298b1ef01db9a93c15f1eeb0638",
     "assets/icon.svg": "49c0c0fcacea43ff3a0dd509d36750ff414d11805e9833bf02eeff710ff0a20a",
     "assets/order-configurations.svg": "e5bdb500f02f9b16519fb21546d4b3c0af1a7062b583b45ac045b9a46d75e3fe",
     "assets/probability-currents.svg": "82f2a9291164c11d0cebb416ed7ca38cd5161c92f76fa6ea920b76b5fce1a1ea",
+    "assets/simplices.svg": "201a3a88596001604087edcc7768e4767e3137131fee9821058c6a55e8a9c31c",
+    "assets/simplicial-complex.svg": "b677bdf058690075d8be0744dbc813d4ccb3545628a7f0fdf7fd30240b798979",
     "assets/small-world.svg": "f2c9f1cf471344e62763e52a3073cbcf26340d7ddb7412bd36e44c27c6f4be68",
-    "data.json": "61ddadabea0d46f45a4dfe578ce5ffe1fd88a9bf9505d3ae04eeeac3f2b17dbf",
-    "graph.js": "f2653ca2f0cb2a4c8802d1c2e18890689a50bc3835eee977a820c98d3aed5b28",
-    "index.html": "3d4eda140f0e30f4fdafd0ed9bcbbe7f0ebc8e89df3832f1dc26c5075cc84a9f",
+    "data.json": "4d354b03ae400d116388af7e37ea73e62e6defd4303202a2428d1812d5c82507",
+    "graph.js": "8ee2ee781436d88315179023794148c47b39f58e303f130271bb549953ae5dad",
+    "index.html": "32c829afcfebc851217ec83ed4e46b65ad9d356d45d4122c9e9bf7cf08db3d8c",
     "katex/fonts/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
     "katex/fonts/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
     "katex/fonts/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
@@ -74,6 +77,6 @@
     "katex/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
     "katex/katex.min.css": "d4ab5b8ee16989b070cdb0ea24bd6ad48fc8df1b787f280f29d3ae4f959f2c00",
     "katex/LICENSE.txt": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3",
-    "style.css": "c4c8840730721e372abbe912093af3a9ce883d1a385bb9355bb8c5e6c1b2fe38"
+    "style.css": "6bbc6ae134591e215e8e2a81f329cfacb0a632bb3ccf65b1d0acc7eadc733ab6"
   }
 }

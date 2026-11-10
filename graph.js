@@ -51,13 +51,16 @@ function createPreview(container){
  const title=htmlEl('strong',''),english=htmlEl('p','preview-english'),description=htmlEl('p','preview-description');
  preview.append(title,english,description);container.append(preview);
  const listeners=new AbortController();
- let anchor=null,showTimer,hideTimer;
+ let anchor=null,keyboardPreview=null,showTimer,hideTimer;
  const cancelTimers=()=>{clearTimeout(showTimer);clearTimeout(hideTimer);};
  const hide=()=>{
-  cancelTimers();anchor?.removeAttribute('aria-describedby');anchor=null;
+  cancelTimers();anchor?.removeAttribute('aria-describedby');anchor=null;keyboardPreview=null;
   if(preview.matches(':popover-open'))preview.hidePopover();
  };
- const delayHide=()=>{clearTimeout(showTimer);clearTimeout(hideTimer);hideTimer=setTimeout(hide,180);};
+ const delayHide=()=>{
+  if(keyboardPreview?.node===document.activeElement)return;
+  clearTimeout(showTimer);clearTimeout(hideTimer);hideTimer=setTimeout(hide,180);
+ };
  function show(node,concept){
   if(!node.isConnected||!container.closest('dialog')?.open)return;
   anchor=node;title.textContent=concept.name;english.textContent=concept.en;description.textContent=concept.description[0];
@@ -79,14 +82,20 @@ function createPreview(container){
  document.addEventListener('keydown',event=>{
   if(event.key==='Escape'&&preview.matches(':popover-open')){event.preventDefault();event.stopImmediatePropagation();hide();}
  },{capture:true,signal:listeners.signal});
- window.addEventListener('scroll',hide,{capture:true,passive:true,signal:listeners.signal});
+ window.addEventListener('scroll',()=>{
+  if(keyboardPreview?.node===document.activeElement){
+   cancelTimers();show(keyboardPreview.node,keyboardPreview.concept);
+  }else hide();
+ },{capture:true,passive:true,signal:listeners.signal});
  window.addEventListener('resize',hide,{signal:listeners.signal});
  return {
   attach(node,concept){
    node.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch')schedule(node,concept,250);});
    node.addEventListener('pointerleave',delayHide);
-   node.addEventListener('focus',()=>{if(node.matches(':focus-visible'))schedule(node,concept,0);});
-   node.addEventListener('blur',delayHide);
+   node.addEventListener('focus',()=>{
+    if(node.matches(':focus-visible')){schedule(node,concept,0);keyboardPreview={node,concept};}
+   });
+   node.addEventListener('blur',()=>{keyboardPreview=null;delayHide();});
   },
   hide,
   dispose(){hide();listeners.abort();preview.remove();},
